@@ -11,7 +11,10 @@ python -m venv .venv
 ```
 **激活虚拟环境**
 ```bash
+# Windows
 .venv\Script\activate
+# Linux
+source .venv/bin/activate
 ```
 ## 二 项目安装
 ```bash
