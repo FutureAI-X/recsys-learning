@@ -8,7 +8,7 @@
 """
 from collections import defaultdict
 
-class ItemCFBinary:
+class ItemCFBinaryJaccard:
     def __init__(self):
         """
         user_items
@@ -89,7 +89,7 @@ if __name__=="__main__":
     ]
 
     # 2. 算法拟合
-    itemcf = ItemCFBinary()
+    itemcf = ItemCFBinaryJaccard()
     itemcf.fit(datas)
 
     # 3. 推荐测试
