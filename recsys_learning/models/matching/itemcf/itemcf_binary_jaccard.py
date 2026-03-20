@@ -2,8 +2,7 @@
 算法: 基于物品的协同过滤
 场景: 隐式反馈场景(无评分)
 版本: 二元版本(例如只知道用户对物品的点击行为)
-算法
-1. Jacard相似系数
+算法: Jacard相似系数
 相似度 = 同时喜欢A和B的个数 / 喜欢A或喜欢B的个数
 """
 from collections import defaultdict
