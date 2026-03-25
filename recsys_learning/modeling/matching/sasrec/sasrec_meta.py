@@ -24,26 +24,26 @@ better than SASRec? (https://arxiv.org/abs/2309.07602, RecSys'23), where the aut
 sampled softmax loss to significantly improved SASRec model quality.
 """
 
-from typing import Dict, Optional, Tuple
+from typing import Dict, Optional
 
 import torch
 import torch.nn.functional as F
-from generative_recommenders.research.modeling.sequential.embedding_modules import (
+from recsys_learning.modules.embedding_modules import (
     EmbeddingModule,
 )
-from generative_recommenders.research.modeling.sequential.input_features_preprocessors import (
+from recsys_learning.processors.input_features_preprocessors import (
     InputFeaturesPreprocessorModule,
 )
-from generative_recommenders.research.modeling.sequential.output_postprocessors import (
+from recsys_learning.processors.output_postprocessors import (
     OutputPostprocessorModule,
 )
-from generative_recommenders.research.modeling.sequential.utils import (
+from recsys_learning.utils.utils import (
     get_current_embeddings,
 )
-from generative_recommenders.research.modeling.similarity_module import (
+from recsys_learning.modules.similarity_module import (
     SequentialEncoderWithLearnedSimilarityModule,
 )
-from generative_recommenders.research.rails.similarities.module import SimilarityModule
+from recsys_learning.modules.similarity_module import SimilarityModule
 
 
 class StandardAttentionFF(torch.nn.Module):
