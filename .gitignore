@@ -209,3 +209,6 @@ __marimo__/
 # 数据集文件
 recsys_learning/**/*.zip
 recsys_learning/**/*.dat
+
+datasets/
+funrec_dataset.zip
