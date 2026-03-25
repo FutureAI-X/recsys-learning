@@ -47,6 +47,7 @@ from recsys_learning.modules.similarity_module import SimilarityModule
 
 
 class StandardAttentionFF(torch.nn.Module):
+    """FFN"""
     def __init__(
         self,
         embedding_dim: int,
@@ -77,6 +78,10 @@ class StandardAttentionFF(torch.nn.Module):
         )
 
     def forward(self, inputs: torch.Tensor) -> torch.Tensor:
+        """
+        Args:
+            inputs (torch.Tensor): shape 为 (batch_size, sequence_length, embedding_dim)
+        """
         # Conv1D requires (B, D, N)
         return self._conv1d(inputs.transpose(-1, -2)).transpose(-1, -2) + inputs
 
