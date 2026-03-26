@@ -20,9 +20,9 @@ class PointWiseFeedForward(nn.Module):
         return outputs
 
 
-class SASRec(nn.Module):
+class SASRecModel(nn.Module):
     def __init__(self, num_items, max_len, embedding_dim, num_blocks, num_heads, dropout_rate, device):
-        super(SASRec, self).__init__()
+        super(SASRecModel, self).__init__()
         self.num_items = num_items
         self.device = device
         self.max_len = max_len
@@ -55,6 +55,20 @@ class SASRec(nn.Module):
 
         self.final_ln = nn.LayerNorm(embedding_dim)
 
+        self._init_weights()
+
+    def _init_weights(self):
+        for module in self.modules():
+            if isinstance(module, nn.Embedding):
+                nn.init.xavier_normal_(module.weight)
+            elif isinstance(module, nn.Linear):
+                nn.init.xavier_normal_(module.weight)
+                if module.bias is not None:
+                    nn.init.zeros_(module.bias)
+            elif isinstance(module, nn.LayerNorm):
+                nn.init.ones_(module.weight)
+                nn.init.zeros_(module.bias)
+
     def generate_causal_mask(self, sequence_length):
         # 生成下三角矩阵作为掩码，防止关注未来信息
         # mask[i, j] = 0 if i >= j (可以看见), -inf if i < j (看不见)
@@ -82,16 +96,15 @@ class SASRec(nn.Module):
         # 生成因果掩码 (适用于整个批次，因为序列长度相同或通过 padding 对齐)
         # 如果序列长度动态变化，需要在每个样本上单独处理或动态生成
         causal_mask = self.generate_causal_mask(seq_len)
+        # key_padding_mask 用于处理 padding (假设 0 是 padding)
+        key_padding_mask_bool = (log_seqs == 0)
+        key_padding_mask = key_padding_mask_bool.to(causal_mask.dtype)
+        key_padding_mask = key_padding_mask.masked_fill(key_padding_mask_bool, float('-inf'))
 
         # 通过多个注意力块和前馈网络
         outputs = embeddings
         for attention_layer, ff_layer in zip(self.attention_layers, self.feed_forward_layers):
             # 自注意力
-            # key_padding_mask 用于处理 padding (假设 0 是 padding)
-            key_padding_mask_bool = (log_seqs == 0)
-            key_padding_mask = key_padding_mask_bool.to(causal_mask.dtype)
-            key_padding_mask = key_padding_mask.masked_fill(key_padding_mask_bool, float('-inf'))
-
             attn_outputs, _ = attention_layer(
                 query=outputs,
                 key=outputs,
@@ -108,6 +121,21 @@ class SASRec(nn.Module):
 
         outputs = self.final_ln(outputs)
         return outputs
+    
+    def predict(self, log_seqs, item_indices):
+        """
+        用于评估：计算给定序列对特定物品集合的得分
+        log_seqs: [batch, seq_len]
+        item_indices: [batch, num_candidates] 需要打分的物品
+        """
+        seq_embeddings = self.forward(log_seqs) # [batch, seq_len, hidden]
+        # 取最后一个有效位置 (非0) 的嵌入，这里简化取最后一个位置
+        # 实际应用中应根据真实长度切片
+        last_emb = seq_embeddings[:, -1, :] # [batch, hidden]
+        
+        item_embs = self.item_emb(item_indices) # [batch, num_candidates, hidden]
+        scores = torch.matmul(last_emb.unsqueeze(1), item_embs.transpose(-1, -2)) # [batch, 1, num_candidates]
+        return scores.squeeze(1)
 
 
 # --- 使用示例 ---
@@ -123,7 +151,7 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # 初始化模型
-    model = SASRec(num_items, max_len, embedding_dim, num_blocks, num_heads, dropout_rate, device)
+    model = SASRecModel(num_items, max_len, embedding_dim, num_blocks, num_heads, dropout_rate, device)
     model.to(device)
     model.train()
 
