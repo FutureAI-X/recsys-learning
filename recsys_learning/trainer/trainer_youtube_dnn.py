@@ -88,7 +88,7 @@ def main(dataset_path, model_name, epoch, learning_rate, batch_size, weight_deca
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dataset_path', default="./data/ml-1m/ml-1m_sample.csv")
+    parser.add_argument('--dataset_path', default="/home/guoteng/code/recsys-learning/recsys_learning/datasets/ml-1m/merge/ml-1m_merge_sample.csv")
     parser.add_argument('--model_name', default='dssm')
     parser.add_argument('--epoch', type=int, default=10)  # 10
     parser.add_argument('--learning_rate', type=float, default=1e-4)
@@ -100,6 +100,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     main(args.dataset_path, args.model_name, args.epoch, args.learning_rate, args.batch_size, args.weight_decay, args.device, args.save_dir, args.seed)
+
 """
 python run_ml_youtube_dnn.py
 """
