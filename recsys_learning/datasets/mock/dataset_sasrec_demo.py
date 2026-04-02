@@ -8,7 +8,7 @@ def generate_simulated_data(num_users, num_items, max_len=200, min_len=5):
     """
     生成模拟的用户行为序列。
     返回: users (list), sequences (list of lists)
-    注意：物品索引从 1 开始，0 保留给 padding
+    注意：物品索引从 1 开始, 0 保留给 padding
     """
     print("正在生成模拟数据...")
     users = []

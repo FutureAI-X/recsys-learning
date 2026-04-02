@@ -1,6 +1,6 @@
 from recsys_learning.models.matching.sasrec.configuration_sasrec import SASRecConfig
 from recsys_learning.models.matching.sasrec.modeling_sasrec import SASRecModel
-from recsys_learning.datasets.dataset_sasrec_demo import get_dataloader_demo
+from recsys_learning.datasets.mock.dataset_sasrec_demo import get_dataloader_demo
 
 import torch.optim as optim
 import torch
